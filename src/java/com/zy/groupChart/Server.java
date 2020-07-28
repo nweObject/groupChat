@@ -16,7 +16,6 @@ public class Server {
 
     private ServerSocketChannel servSocketChannel;
     private Selector selector;
-    private InetAddress inetAddress;
 
     /**
      * 初始化服务器
@@ -24,13 +23,13 @@ public class Server {
     public Server(){
 
         try {
-            ServerSocketChannel serverSocketChannel = servSocketChannel.open();
+            servSocketChannel = ServerSocketChannel.open();
             servSocketChannel.socket().bind(new InetSocketAddress(7000));
             selector = Selector.open();
             //开启非阻塞模式
-            serverSocketChannel.configureBlocking(false);
+            servSocketChannel.configureBlocking(false);
             //注册serverSocketChannel
-            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+            servSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
         } catch (IOException e) {
             e.printStackTrace();
         }
