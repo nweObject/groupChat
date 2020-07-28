@@ -44,7 +44,7 @@ public class Server {
             try {
                 //这里我们等待1秒，如果没有事件发生, 返回
                 if(selector.select(1000) == 0) { //没有事件发生
-                    System.out.println("服务器等待了1秒，无连接");
+
                     continue;
                 }
                 Set<SelectionKey> selectionKeys = selector.selectedKeys();
@@ -55,10 +55,8 @@ public class Server {
                     if(key.isAcceptable()) {
                         SocketChannel socketChannel = servSocketChannel.accept();
                         socketChannel.configureBlocking(false);
-                        socketChannel.register(selector, SelectionKey.OP_READ, 1024);
+                        socketChannel.register(selector, SelectionKey.OP_READ);
                         System.out.println(socketChannel.getRemoteAddress() + "上线");
-                    }else {
-                        System.out.println("等待连接");
                     }
                     //读已就绪
                     if(key.isReadable()) {
@@ -76,12 +74,12 @@ public class Server {
     }
     public void readData(SelectionKey selectionKey) {
         SocketChannel channel = (SocketChannel)selectionKey.channel();
-        ByteBuffer byteBuffer = (ByteBuffer) selectionKey.attachment();
+        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
         try {
             int read = channel.read(byteBuffer);
             while (read > 0) {
-                System.out.println(byteBuffer.array());
                 String msg = new String(byteBuffer.array());
+                System.out.println(msg);
                 //转发
                 sendInfoToOtherClients(msg, channel);
                 byteBuffer.clear();
